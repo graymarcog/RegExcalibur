@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>RegExcalibur</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+    <style>
+      body {
+        background-color: #f8f9fa;
+        color: #212529;
+        font-family: 'Open Sans', sans-serif;
+        font-size: 16px;
+        line-height: 1.5;
+        margin: 0;
+        padding: 0;
+      }
+      
+      .container {
+        margin-top: 40px;
+        margin-bottom: 40px;
+      }
+      
+      .card {
+        border: none;
+        border-radius: 5px;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+      }
+      
+      .card-header {
+        border-bottom: none;
+        background-color: #343a40;
+        color: #fff;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+      }
+      
+      .card-header h5 {
+        margin: 0;
+        font-size: 20px;
+        font-weight: bold;
+      }
+      
+      .form-group label {
+        font-weight: bold;
+        margin-bottom: 5px;
+        color: #343a40;
+      }
+      
+      .form-control {
+        width: 100%;
+        border-radius: 5px;
+        border: 1px solid #ced4da;
+        font-size: 16px;
+        padding: 0.375rem 0.75rem;
+      }
+      
+      .form-control:focus {
+        border-color: #343a40;
+      }
+      
+      .btn-primary {
+        background-color: #343a40;
+        border-color: #343a40;
+      }
+      
+      .btn-primary:hover {
+        background-color: #23272b;
+        border-color: #23272b;
+      }
+      
+      .regex-result {
+        margin-top: 20px;
+        font-size: 18px;
+      }
+
+      .dropdown-item {
+        cursor: pointer;
+      }
+
+      .dropdown-item:hover {
+        background-color: #f2f2f2;
+      }
+
+      .dropdown-header {
+        font-weight: bold;
+        font-size: 18px;
+        color: #343a40;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-md-8">
+          <div class="card">
+            <div class="card-header">
+              <h5 class="mb-0">RegExcalibur</h5>
+            </div>
+            <div class="card-body">
+              <form>
+                <div class="form-group">
+                  <label for="test-string">Enter String:</label>
+                  <input type="text" class="form-control" id="test-string" placeholder="Enter the string" required>
+                </div>
+                <div class="form-group">
+                  <label for="regex-pattern">Enter Your Regular Expression Pattern Or Use Dropdown Menu:</label>
+                  <div class="input-group">
+                    <input type="text" class="form-control" id="regex-pattern" placeholder="Enter the regex pattern" required>
+                    <div class="input-group-append">
+                      <button class="btn btn-primary dropdown-toggle" type="button" id="regex-pattern-menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Choose a Regex Pattern</button>
+                      <div class="dropdown-menu" aria-labelledby="regex-pattern-menu">
+                        <h6 class="dropdown-header">Basic Patterns</h6>
+                        <a class="dropdown-item" onclick="chooseRegex('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')">Email Validation</a>
+                        <a class="dropdown-item" onclick="chooseRegex('^[0-9]{3}-?[0-9]{2}-?[0-9]{4}$')">US Social Security Number</a>
+                        <a class="dropdown-item" onclick="chooseRegex('^[0-9]{5}(?:[-\s][0-9]{4})?$')">US Zip Code</a>
+                        <a class="dropdown-item" onclick="chooseRegex('^[0-9]{10}$')">US Phone Number</a>
+                        <h6 class="dropdown-header">Advanced Patterns</h6>
+                        <a class="dropdown-item" onclick="chooseRegex('^\d{2}(\/)\d{2}\1\d{4}$')">Date Format (MM/DD/YYYY)</a>
+                        <a class="dropdown-item" onclick="chooseRegex('^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W])(?!.*\s).{8,16}$')">Strong Password (8-16 characters containing uppercase, lowercase, numbers and symbols)</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Start</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-md-8">
+          <div class="card">
+            <div class="card-body">
+              <div class="regex-result" id="result"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+      $(document).ready(function() {
+        $('form').submit(function(e) {
+          e.preventDefault();
+          const testString = $('#test-string').val();
+          const regexPattern = $('#regex-pattern').val();
+
+          let regexValid;
+          try {
+            regexValid = new RegExp(regexPattern);
+          } catch (e) {
+            regexValid = false;
+          }
+
+          const matchResult = regexValid ? testString.match(regexValid) : null;
+
+          if (matchResult !== null) {
+            $('#result').html(`Match found: ${matchResult}`);
+          } else {
+            $('#result').html('No match found.');
+          }
+        });
+      });
+
+      function chooseRegex(regex) {
+        $('#regex-pattern').val(regex);
+      }
+    </script>
+  </body>
+</html>
